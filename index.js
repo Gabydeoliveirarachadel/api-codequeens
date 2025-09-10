@@ -18,13 +18,27 @@ app.get('/', (req, res) => {
     res.json({ mensagem: 'API de pessoas funcionado' });
 });
 
+app.post('/pessoas', (req, res) => {
+    const { nome, idade, cor_favorita } = req.body;
+    const newUser = {
+        id: pessoas.length + 1,
+        nome,
+        idade,
+        cor_favorita
+    };
+
+    console.log("novos dados:", newUser)
+    pessoas.push(newUser);
+    res.status(201).json(newUser);//codigo de criacao com sucesso
+})
+
 //API do tipo GET rota = 'http://localhodt:3000/pessoas'
 app.get('/pessoas', (req, res) => {
     res.json(pessoas)
 });
 
 // API do tipo POST (adiciona)
-app.post("/pessoa", (req, res) => {
+app.post('/pessoa', (req, res) => {
     const { nome, idade } = req.body;
     const newUser = {
         id: pessoas.length + 1,
@@ -38,15 +52,59 @@ app.post("/pessoa", (req, res) => {
 
 //API do tipo GET para buscar 1 pessoa só por ID 
 //rota: htto://localhost:3000/pessoas/2
-app.get("/pessoa/:id", (req, res) => {
+app.put("/pessoa/:id", (req, res) => {
     const id = parseInt(req.params.id);
-    const pessoa = pessoas.find(u => u.id === id);
+    console.log("ID: ", id)
+
+    const pessoa = pessoas.find(p => p.id === id);
+    console.log("PESSOA: ", pessoa)
 
     if (!pessoa) {
-        return res.status(404).json({ error: "Usuario nao encontrado" });
+        return res.status(404).json({ mensagem: 'Pessoas nao encontrado' });
     }
-    res.json(pessoa);
+
+    const novaPessoa = req.body;
+    console.log("ANTIGA PESSOA: ", pessoa)
+    console.log("NOVA PESSOA: ", novaPessoa)
+
+    pessoa.nome = novaPessoa.nome
+    pessoa.idade = novaPessoa.idade
+    pessoa.cor_favorita = novaPessoa.cor_favorita
+
+    pessoas[pessoa.id -1] = pessoa
+
+    console.log("PESSOAS: ", pessoas)
+    res.json(pessoas);
 });
+
+//endpoint 05 do tipo PUT/patch rota = 'http//localh
+app.put('/pessoas/:id',(req,res) =>{
+    pessoas[id] = req.body
+    console.log(pessoas[1])
+  
+})
+
+app.delete("/pessoa/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    console.log("ID: ", id)
+
+    const pessoa = pessoas.findIndex(p => p.id === id);
+    console.log("PESSOA: ", pessoa)
+
+    if (pessoa >= -1) {
+        return res.status(404).json({ mensagem: 'Pessoas nao encontrado' });
+    }
+   pessoas.splice(pessoa, 1);
+   console.log(pessoas);
+   res.json(pessoas);
+});
+
+app.get("/totalPessoas",(req, res) => {
+    console.log("REQUISICAO: ", req)
+    console.log("\n\nRESPONSE: ", res)
+    res.json({data: pessoas.length})
+});
+
 
 
 const PORT = 3000
